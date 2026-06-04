@@ -31,6 +31,7 @@ The platform is structured around **5 layers**:
 ---
 
 ## 🗄️ Data Model (Star Schema)
+![Architecture](data-model.png)
 
 The analytical layer follows a star schema centered on a sales fact table:
 
