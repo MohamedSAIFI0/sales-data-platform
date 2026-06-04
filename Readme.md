@@ -3,7 +3,7 @@
 A production-grade end-to-end data platform implementing **Lambda Architecture**, **Data Lakehouse**, and **Medallion Architecture** for real-time and batch sales analytics.
 
 > All services are containerized with **Docker** and orchestrated with **Apache Airflow** (via Astro CLI).
-![Architecture](sales-data-plateform/image.png)
+![Architecture](/home/laila/Desktop/sales-data-plateform/image.png)
 ---
 
 ## 📐 Architecture Overview
