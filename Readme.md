@@ -1,70 +1,201 @@
+# 🛒 Sales Data Platform
 
-Donc j'ai cree docker compose qui regroupe tous les outils dont on a besoin sauf airflow parce que je l'ai lance avec astro.
-donc nous devons connecter airflow avec les outils qu'on a et pour faire ca veuillez suivre les instructions suivants:
-pour lancer airflow avec astro :
-    telecharger astro sur votre machine(consultez le site officiel de astro)
-    verfier en utilisant la commande suivante : astro version
-    dans orchestration lancez la commande suivante : astro dev init
-    et pour demarrer le conteneur : astro dev start
-pour connecter airflow avec les outils : 
-    Nous devons creer un netwok qui connecte ce dernier avec kafka, spark ... :
-        docker network connect data-platform-network <airflow-container>
+A production-grade end-to-end data platform implementing **Lambda Architecture**, **Data Lakehouse**, and **Medallion Architecture** for real-time and batch sales analytics.
 
-Pour etablir la connexion :
-    Dans Airflow UI:
-        Admin -> Connexion
-    
-        A: Kafka Connection
-            Conn Id: kafka_default
-            Conn Type: Generic
-            Host: kafka
-            Port: 29092
-        
-        B: Spark
-            Conn Id: spark_default
-            Conn Type: Spark
-            Host: spark://spark-master
-            Port: 7077
-        
-        C: Postgres
-            Conn Id: postgres_default
-            Host: postgres
-            Schema: data_platform
-            Login: admin
-            Password: ***
-            Port: 5432
+> All services are containerized with **Docker** and orchestrated with **Apache Airflow** (via Astro CLI).
+![Architecture](sales-data-plateform/image.png)
+---
 
-        D: Minio
-            Conn Id: minio_s3
-            Conn Type: Amazon S3
-            Extra:
-            {
-            "aws_access_key_id": "minioadmin",
-            "aws_secret_access_key": "minioadmin",
-            "endpoint_url": "http://minio:9000"
-            }
-            MINIO_ROOT_USER:	aws_access_key_id
-            MINIO_ROOT_PASSWORD:	aws_secret_access_key
-        
-        E:
-            Conn Id: trino_default
-            Conn Type: HTTP
-            Host: trino
-            Port: 8080
-    
-## Superset
-Pour travailler avec superset il faut creer un utilisateur et la configurer:
-    cd ~/Desktop/sales-data-plateform/docker
+## 📐 Architecture Overview
 
-### Crée la base superset_db dans postgres
+```
+Data Sources ──► Ingestion Layer ──► Processing Layer ──► Storage Layer ──► Consumption Layer
+  PostgreSQL        Kafka Connect        Spark Streaming      Cassandra (RT)     Real-time ML
+  CSV Files         ZooKeeper            Spark SQL            MinIO Lakehouse    Superset BI
+  REST API          kafka-python                              CDC / Trino
+```
+
+The platform is structured around **5 layers**:
+
+| Layer | Role | Tools |
+|---|---|---|
+| **Data Sources** | Raw data origins | PostgreSQL, CSV Files, REST API |
+| **Ingestion** | Stream ingestion | Apache Kafka, Kafka Connect, ZooKeeper, kafka-python |
+| **Processing** | Stream & batch compute | Apache Spark Streaming, Spark SQL |
+| **Storage** | Real-time & analytical store | Cassandra, MinIO (Lakehouse), Delta Lake |
+| **Consumption** | Querying & visualization | Trino, Apache Superset, Kafka (ML predictions) |
+
+**Orchestration:** Apache Airflow (Astro CLI)  
+**Data Catalog:** OpenMetadata
+
+---
+
+## 🗄️ Data Model (Star Schema)
+
+The analytical layer follows a star schema centered on a sales fact table:
+
+- **`fact_ventes`** — sales transactions (`vente_id`, `date_vente`, `client_id`, `produit_id`, `canal_id`, `prix_unitaire`, `quantite`, `montant_ht`, `marge_brute`, `nb_retours`)
+- **`dim_client`** — customer dimension (`client_id`, `nom`, `email`, `telephone`, `segment`, `date_inscription`)
+- **`dim_produit`** — product dimension (`produit_id`, `code_produit`, `nom`, `marque`, `categorie`, `prix_vente`, `prix_achat`, `poids_g`, `statut`)
+- **`dim_canal`** — sales channel dimension (`canal_id`, `code_canal`, `type_canal`, `commission_pct`, `actif`)
+- **`dim_date`** — date dimension (`date`, `annee`, `trimestre`, `mois`, `jour_semaine`, `est_weekend`)
+
+---
+
+## 📁 Project Structure
+
+```
+sales-data-platform/
+├── data/                   # Source data and REST API (FastAPI)
+├── ingestion/              # Kafka Connect connector configs (JSON)
+├── spark-processing/       # Spark Streaming & SQL jobs (Java/Python)
+│   ├── CassandraConfig.java
+│   ├── CassandraWriter.java
+│   └── resources/schema.cql
+├── storage/                # MinIO / Lakehouse configs
+├── analytics/              # Trino schemas, Superset dashboards
+├── ml_ventes/              # ML models for sales predictions
+├── orchestration/          # Airflow DAGs (Astro project)
+├── docker/                 # docker-compose.yml and service configs
+└── .gitignore
+```
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- [Docker](https://www.docker.com/) & Docker Compose
+- [Astro CLI](https://docs.astronomer.io/astro/cli/install-cli) (for Airflow)
+- Python 3.8+, Java 11+
+
+---
+
+### 1. Start Core Services (Docker)
+
+```bash
+cd docker
+docker compose up -d
+```
+
+This starts: Kafka, ZooKeeper, Kafka Connect, Spark, Cassandra, MinIO, Trino, PostgreSQL, and OpenMetadata.
+
+---
+
+### 2. Start Airflow (Astro)
+
+```bash
+# Verify Astro CLI is installed
+astro version
+
+# Initialize the Astro project (first time only)
+cd orchestration
+astro dev init
+
+# Start Airflow
+astro dev start
+```
+
+---
+
+### 3. Connect Airflow to the Platform Network
+
+Airflow runs in its own container network. Connect it to the platform:
+
+```bash
+docker network connect data-platform-network <airflow-container-name>
+```
+
+Then configure connections in the **Airflow UI** (`Admin → Connections`):
+
+| Conn ID | Type | Host | Port | Notes |
+|---|---|---|---|---|
+| `kafka_default` | Generic | `kafka` | `29092` | |
+| `spark_default` | Spark | `spark://spark-master` | `7077` | |
+| `postgres_default` | Postgres | `postgres` | `5432` | Schema: `data_platform` |
+| `minio_s3` | Amazon S3 | — | — | See extra JSON below |
+| `trino_default` | HTTP | `trino` | `8080` | |
+
+**MinIO S3 Extra config:**
+```json
+{
+  "aws_access_key_id": "minioadmin",
+  "aws_secret_access_key": "minioadmin",
+  "endpoint_url": "http://minio:9000"
+}
+```
+
+---
+
+### 4. Deploy Kafka Connect Connectors
+
+```bash
+# PostgreSQL source connectors
+curl -X POST http://localhost:8083/connectors \
+  -H "Content-Type: application/json" \
+  -d @ingestion/postgres-source-clients.json
+
+curl -X POST http://localhost:8083/connectors \
+  -H "Content-Type: application/json" \
+  -d @ingestion/postgres-source-produits.json
+
+# CSV source connectors
+curl -X POST http://localhost:8083/connectors \
+  -H "Content-Type: application/json" \
+  -d @ingestion/canaux-vente-source.json
+
+curl -X POST http://localhost:8083/connectors \
+  -H "Content-Type: application/json" \
+  -d @ingestion/retours-source.json
+
+# Verify connector status
+curl http://localhost:8083/connectors/postgres-source-clients/status
+curl http://localhost:8083/connectors/csv-canaux-vente/status
+```
+
+**Expected Kafka topics after deployment:**
+```
+pg_clients    pg_produits    canaux_vente    retours    ventes    stocks
+```
+
+Verify:
+```bash
+docker exec kafka kafka-topics --bootstrap-server kafka:29092 --list
+```
+
+---
+
+### 5. Start the Data Ingestion API
+
+```bash
+cd data/data-api
+pip3 install fastapi --break-system-packages
+uvicorn main:app --reload
+```
+
+Then start the Kafka producer:
+```bash
+pip install kafka-python requests
+python3 producer.py
+```
+
+---
+
+### 6. Set Up Apache Superset
+
+```bash
+cd docker
+
+# Create the Superset database in PostgreSQL
 docker exec -it postgres psql -U saifi -d postgres \
   -c "CREATE DATABASE superset_db;"
 
-### Lance Superset
+# Start Superset
 docker compose up -d superset
 sleep 15
 
-### Initialise le schéma et crée l'admin
+# Initialize schema and create admin user
 docker exec -it superset superset db upgrade
 docker exec -it superset superset fab create-admin \
   --username admin \
@@ -74,103 +205,85 @@ docker exec -it superset superset fab create-admin \
   --password admin
 
 docker exec -it superset superset init
+```
 
+Access Superset at **http://localhost:8088** — login: `admin / admin`
 
-    acceder sur l'url suivant : http://localhost:8088
-                                login: admin / admin
+---
 
+### 7. Set Up OpenMetadata
 
-# OpenMetaData
-
-Il faut creer une base de donnees pour openmetadata 
-### 1. Recrée la base
+```bash
+# Create and grant the database
 docker exec -it postgres psql -U saifi -d postgres \
   -c "CREATE DATABASE openmetadata_db;"
 
-### 2. Accorde les droits
 docker exec -it postgres psql -U saifi -d postgres \
   -c "GRANT ALL PRIVILEGES ON DATABASE openmetadata_db TO saifi;"
 
-### 3. Vérifie qu'elle existe
-docker exec -it postgres psql -U saifi -d postgres -c "\l" | grep openmetadata
+# Run migrations
+docker exec -it openmetadata bash -c \
+  "cd /opt/openmetadata && ./bootstrap/bootstrap_storage.sh migrate-all"
 
-### 4. Lance la migration
-docker exec -it openmetadata bash -c "cd /opt/openmetadata && ./bootstrap/bootstrap_storage.sh migrate-all"
-
-### 5. Vérifie les tables créées
+# Verify tables
 docker exec -it postgres psql -U saifi -d openmetadata_db -c "\dt" | head -20
+```
 
+**PostgreSQL source connection settings:**
+- Username: `admin`
+- Password: `admin`
+- Database: `salesdbsource`
 
+---
 
+## 🔄 Real-Time Data Flow
 
-# Ajouter la source Postgresql
+1. **Sources** (PostgreSQL, CSV, API) → ingested via **Kafka Connect** and `kafka-python` producers
+2. **Kafka** buffers all event streams across 6 topics
+3. **Spark Structured Streaming** reads from Kafka in real time, applies transformations
+4. Processed data is written to **Cassandra** (keyspace: `ventes_platform`) for low-latency reads
+5. Batch jobs via **Spark SQL** write to the **MinIO Lakehouse** (Delta/Parquet)
+6. **Trino** queries both Cassandra and the Lakehouse for unified analytics
+7. **Superset** dashboards connect through Trino for BI visualization
+8. **ML models** (`ml_ventes/`) consume Kafka streams for real-time sales predictions
 
-Nous avons cree une base de donnees postgresl comme source de donnees aves les informations suivants :
-username = "admin"
-password = "admin"
-base de donnees = salesdbsource
+---
 
-# Configuration des connecteurs
+## 🛠️ Tech Stack
 
+| Category | Tools |
+|---|---|
+| **Streaming** | Apache Kafka, ZooKeeper, Kafka Connect |
+| **Processing** | Apache Spark (Streaming + SQL), Java |
+| **Storage** | Apache Cassandra, MinIO (S3-compatible) |
+| **Query Engine** | Trino |
+| **Orchestration** | Apache Airflow (Astro CLI) |
+| **BI / Visualization** | Apache Superset |
+| **Data Catalog** | OpenMetadata |
+| **API** | FastAPI (Python) |
+| **Containerization** | Docker, Docker Compose |
 
-# Deploiement des connecteurs 
-curl -X POST http://localhost:8083/connectors \
-  -H "Content-Type: application/json" \
-  -d @postgres-source-clients.json
+---
 
-curl -X POST http://localhost:8083/connectors \
-  -H "Content-Type: application/json" \
-  -d @postgres-source-produits.json
+## 📊 Service URLs
 
-sleep 8
+| Service | URL | Credentials |
+|---|---|---|
+| Airflow UI | http://localhost:8080 | (Astro defaults) |
+| Superset | http://localhost:8088 | admin / admin |
+| Kafka Connect REST | http://localhost:8083 | — |
+| MinIO Console | http://localhost:9001 | minioadmin / minioadmin |
+| Trino UI | http://localhost:8080 | — |
+| Spark Master UI | http://localhost:8181 | — |
 
-curl http://localhost:8083/connectors/postgres-source-clients/status
-curl http://localhost:8083/connectors/postgres-source-produits/status
+---
 
+## 🤝 Contributing
 
-curl -X POST http://localhost:8083/connectors \
-  -H "Content-Type: application/json" \
-  -d @canaux-vente-source.json
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
-curl -X POST http://localhost:8083/connectors \
-  -H "Content-Type: application/json" \
-  -d @retours-source.json
+---
 
-sleep 8
+## 📄 License
 
-curl http://localhost:8083/connectors/csv-canaux-vente/status
-curl http://localhost:8083/connectors/csv-retours/status
-
-
-# Lancer API
-acceder au dossier data et exactement dans data-api
-    pip3 install fastapi --break-system-packages
-    uvicorn main:app --reload
-
-# Creer producer.py pour fastAPI -> Kafka
-    touch producer.py
-    pip install kafka-python requests
-    python3 producer.py
-
-# Tous les topics sont présents !
-    docker exec kafka kafka-topics --bootstrap-server kafka:29092 --list
-        pg_clients
-        pg_produits
-        canaux_vente
-        retours
-        ventes
-        stocks
-
-# Le traitement des donnees temps reel 
-donc j'ai lu les donnees depuis kafka en utilisant spark structured streaming
-
-# Spark to Cassandra
-apres le traitement on a persister la data dans cassandra 
-  keyspace : ventes_platform
-  la configuration existe dans le fichier CassandraConfig.java
-  
-  la schema de notre base de donnees existe dans : resources/schema.cql
-
-  on a travaille avec la classe CassandraWriter qui permet d'ecrire les donnees dans cassandra
-
-  
+This project is open source. See [LICENSE](LICENSE) for details.
