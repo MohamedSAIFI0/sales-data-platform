@@ -1,0 +1,101 @@
+retour_id,commande_ref,produit_id,client_id,date_retour,motif,statut,montant_rembourse,canal_achat
+1,VTE-0000328,4,2,2023-10-09,Ne correspond pas à la description,Accepté,279.08,magasin
+2,VTE-0000347,24,35,2023-03-31,Changement d'avis,En cours,63.57,magasin
+3,VTE-0000112,8,33,2024-09-08,Produit défectueux,Refusé,397.68,marketplace
+4,VTE-0000113,15,38,2023-10-12,Produit défectueux,Accepté,1396.28,mobile
+5,VTE-0000143,5,14,2023-12-11,Produit défectueux,Accepté,759.85,mobile
+6,VTE-0000434,12,39,2023-09-28,Produit défectueux,En cours,1072.46,marketplace
+7,VTE-0000041,18,19,2024-10-05,Changement d'avis,Accepté,1154.7,magasin
+8,VTE-0000024,22,15,2023-10-24,Produit défectueux,Accepté,1732.97,marketplace
+9,VTE-0000143,15,41,2024-01-09,Ne correspond pas à la description,Accepté,710.54,mobile
+10,VTE-0000360,30,44,2024-10-25,Produit défectueux,Refusé,1269.96,web
+11,VTE-0000084,15,25,2023-10-04,Livraison tardive,Refusé,439.23,mobile
+12,VTE-0000432,25,50,2023-02-27,Ne correspond pas à la description,Accepté,1610.09,marketplace
+13,VTE-0000138,3,14,2024-08-03,Livraison tardive,Accepté,425.25,marketplace
+14,VTE-0000203,29,42,2024-04-14,Ne correspond pas à la description,Accepté,279.26,mobile
+15,VTE-0000383,19,28,2024-08-20,Produit endommagé,Accepté,438.64,web
+16,VTE-0000261,16,6,2023-02-18,Produit défectueux,Accepté,1254.89,marketplace
+17,VTE-0000306,3,25,2024-01-26,Changement d'avis,En cours,1058.23,magasin
+18,VTE-0000349,24,8,2024-11-29,Changement d'avis,Accepté,1537.2,mobile
+19,VTE-0000058,10,28,2023-06-11,Produit endommagé,Accepté,1907.63,mobile
+20,VTE-0000498,17,49,2023-07-02,Changement d'avis,Accepté,1741.04,mobile
+21,VTE-0000431,21,33,2024-09-15,Ne correspond pas à la description,Accepté,747.83,web
+22,VTE-0000277,25,34,2023-01-01,Changement d'avis,Accepté,977.21,magasin
+23,VTE-0000476,12,20,2023-09-03,Produit défectueux,Accepté,1756.02,magasin
+24,VTE-0000044,24,32,2023-03-12,Changement d'avis,Accepté,256.78,marketplace
+25,VTE-0000485,18,11,2023-09-29,Changement d'avis,Refusé,846.28,web
+26,VTE-0000476,18,49,2024-12-07,Ne correspond pas à la description,Accepté,797.98,mobile
+27,VTE-0000225,29,34,2024-04-07,Produit défectueux,Accepté,449.39,mobile
+28,VTE-0000011,19,36,2023-08-24,Changement d'avis,Accepté,14.38,magasin
+29,VTE-0000118,3,3,2023-12-05,Produit défectueux,Refusé,476.01,marketplace
+30,VTE-0000110,18,9,2024-08-07,Changement d'avis,En cours,485.99,marketplace
+31,VTE-0000414,14,13,2023-04-07,Produit défectueux,En cours,708.6,marketplace
+32,VTE-0000240,28,47,2023-02-25,Livraison tardive,Accepté,121.23,mobile
+33,VTE-0000410,28,7,2023-09-12,Ne correspond pas à la description,Accepté,1072.57,web
+34,VTE-0000217,6,18,2024-04-18,Ne correspond pas à la description,Accepté,886.26,magasin
+35,VTE-0000026,21,35,2023-01-16,Produit défectueux,Accepté,332.62,marketplace
+36,VTE-0000247,7,26,2023-03-02,Ne correspond pas à la description,En cours,4.31,marketplace
+37,VTE-0000136,30,30,2023-10-20,Produit endommagé,Refusé,1323.74,marketplace
+38,VTE-0000080,7,19,2023-08-11,Produit défectueux,Refusé,1471.47,magasin
+39,VTE-0000383,11,4,2023-02-21,Changement d'avis,En cours,1005.7,web
+40,VTE-0000030,17,6,2023-07-10,Produit défectueux,Refusé,135.92,web
+41,VTE-0000207,4,37,2023-09-10,Changement d'avis,Refusé,79.48,magasin
+42,VTE-0000215,22,38,2024-08-01,Changement d'avis,Accepté,1869.41,web
+43,VTE-0000343,23,21,2023-09-02,Mauvaise taille,En cours,261.76,mobile
+44,VTE-0000235,11,49,2023-03-16,Produit défectueux,En cours,1242.32,magasin
+45,VTE-0000038,18,14,2024-06-02,Mauvaise taille,Accepté,1866.52,magasin
+46,VTE-0000451,8,24,2023-10-19,Ne correspond pas à la description,En cours,1667.49,mobile
+47,VTE-0000314,26,42,2024-06-25,Produit défectueux,Refusé,598.76,magasin
+48,VTE-0000481,29,9,2023-09-28,Produit défectueux,Accepté,1484.83,web
+49,VTE-0000140,10,39,2023-08-04,Livraison tardive,Accepté,407.19,mobile
+50,VTE-0000259,16,17,2023-02-22,Produit défectueux,En cours,1658.7,magasin
+51,VTE-0000002,11,50,2023-05-14,Livraison tardive,Accepté,323.16,marketplace
+52,VTE-0000283,23,28,2024-07-28,Produit défectueux,Accepté,150.49,web
+53,VTE-0000280,2,24,2024-08-19,Changement d'avis,Accepté,859.57,magasin
+54,VTE-0000158,12,3,2024-01-02,Ne correspond pas à la description,Accepté,1333.87,mobile
+55,VTE-0000400,18,27,2024-09-27,Livraison tardive,Accepté,1851.53,web
+56,VTE-0000443,6,12,2024-02-27,Produit défectueux,Accepté,1473.13,mobile
+57,VTE-0000401,30,27,2024-11-16,Livraison tardive,Accepté,533.61,magasin
+58,VTE-0000196,28,3,2024-04-26,Ne correspond pas à la description,Accepté,1633.17,marketplace
+59,VTE-0000180,10,15,2023-08-17,Produit défectueux,Accepté,796.93,mobile
+60,VTE-0000443,3,50,2023-10-13,Mauvaise taille,Refusé,799.36,mobile
+61,VTE-0000481,1,8,2023-09-25,Ne correspond pas à la description,Refusé,1925.07,mobile
+62,VTE-0000020,4,39,2024-03-20,Mauvaise taille,Accepté,872.79,magasin
+63,VTE-0000198,29,37,2023-07-14,Mauvaise taille,Accepté,1417.57,magasin
+64,VTE-0000267,30,35,2024-12-04,Livraison tardive,Accepté,728.44,magasin
+65,VTE-0000486,22,22,2024-09-30,Mauvaise taille,Accepté,1439.51,mobile
+66,VTE-0000260,10,43,2024-02-23,Mauvaise taille,En cours,1394.42,web
+67,VTE-0000099,14,43,2024-01-24,Livraison tardive,Accepté,1231.03,mobile
+68,VTE-0000208,18,1,2023-11-08,Mauvaise taille,Accepté,859.78,mobile
+69,VTE-0000239,15,29,2024-11-22,Ne correspond pas à la description,Refusé,946.37,web
+70,VTE-0000338,3,19,2024-06-11,Livraison tardive,Refusé,670.38,web
+71,VTE-0000345,10,15,2023-07-23,Ne correspond pas à la description,Accepté,92.43,marketplace
+72,VTE-0000313,28,50,2023-03-16,Produit endommagé,En cours,1772.27,web
+73,VTE-0000368,23,25,2024-05-21,Produit endommagé,Accepté,295.14,magasin
+74,VTE-0000458,25,50,2023-04-20,Produit endommagé,Accepté,351.77,marketplace
+75,VTE-0000026,18,16,2023-05-05,Produit endommagé,Accepté,1602.83,mobile
+76,VTE-0000487,25,29,2024-09-19,Livraison tardive,Refusé,853.48,marketplace
+77,VTE-0000460,6,48,2024-05-01,Produit endommagé,Accepté,1503.55,mobile
+78,VTE-0000393,25,34,2024-05-11,Livraison tardive,Accepté,549.19,magasin
+79,VTE-0000366,10,16,2023-10-06,Mauvaise taille,Accepté,1786.05,magasin
+80,VTE-0000071,5,15,2024-01-28,Livraison tardive,Accepté,1412.84,magasin
+81,VTE-0000213,14,22,2024-07-09,Produit endommagé,En cours,124.53,marketplace
+82,VTE-0000200,29,50,2024-08-21,Livraison tardive,Accepté,1713.46,marketplace
+83,VTE-0000245,1,23,2023-11-02,Produit endommagé,En cours,1076.44,web
+84,VTE-0000250,8,18,2024-03-22,Produit endommagé,Accepté,777.71,marketplace
+85,VTE-0000371,6,30,2023-05-11,Changement d'avis,Refusé,53.93,marketplace
+86,VTE-0000304,19,43,2023-01-28,Produit défectueux,En cours,271.4,marketplace
+87,VTE-0000094,2,17,2024-01-24,Mauvaise taille,Accepté,909.4,mobile
+88,VTE-0000390,29,25,2023-10-12,Produit endommagé,Accepté,1669.82,marketplace
+89,VTE-0000010,24,35,2023-02-23,Mauvaise taille,Accepté,1300.29,magasin
+90,VTE-0000387,1,16,2023-07-24,Produit défectueux,Refusé,304.76,web
+91,VTE-0000243,22,8,2024-07-31,Ne correspond pas à la description,En cours,1398.93,mobile
+92,VTE-0000086,20,39,2023-04-28,Ne correspond pas à la description,Accepté,216.2,magasin
+93,VTE-0000476,10,37,2024-11-24,Produit endommagé,En cours,1882.94,web
+94,VTE-0000039,19,45,2024-10-04,Ne correspond pas à la description,Accepté,1394.39,mobile
+95,VTE-0000436,22,39,2023-05-04,Changement d'avis,Accepté,694.41,marketplace
+96,VTE-0000339,12,5,2024-06-02,Livraison tardive,Accepté,25.3,marketplace
+97,VTE-0000422,16,7,2024-03-19,Mauvaise taille,En cours,1414.62,marketplace
+98,VTE-0000091,24,34,2024-10-28,Mauvaise taille,Refusé,1616.4,marketplace
+99,VTE-0000239,14,47,2024-08-29,Mauvaise taille,Accepté,1703.43,magasin
+100,VTE-0000143,29,29,2023-09-07,Produit endommagé,Refusé,1220.66,marketplace

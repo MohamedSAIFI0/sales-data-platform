@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VentesML · Plateforme Prédictive</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F7F6F3;
+  --surface: #FFFFFF;
+  --surface2: #F2F1EE;
+  --border: #E2E0DA;
+  --border-strong: #C8C6BF;
+  --accent: #1A3A5C;
+  --accent-light: #EEF3F8;
+  --accent2: #2D6A4F;
+  --accent2-light: #EAF3EE;
+  --warn: #92600A;
+  --warn-light: #FEF6E7;
+  --danger: #8B2020;
+  --danger-light: #FAECEC;
+  --text: #1C1B18;
+  --muted: #6B6960;
+  --subtle: #9B9890;
+  --font-head: 'Libre Baskerville', Georgia, serif;
+  --font-body: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+.app { display: grid; grid-template-rows: auto 1fr; min-height: 100vh; }
+
+header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 2rem;
+  height: 56px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 100;
+}
+
+.logo {
+  display: flex; align-items: center; gap: 0.875rem;
+  font-family: var(--font-head);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: -0.01em;
+}
+
+.logo-mark {
+  width: 28px; height: 28px;
+  background: var(--accent);
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.logo-mark svg { width: 16px; height: 16px; }
+
+.status-indicator {
+  display: flex; align-items: center; gap: 0.5rem;
+  font-family: var(--font-mono); font-size: 0.7rem;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+
+.status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border-strong); }
+.status-dot.live { background: var(--accent2); animation: breathe 2.5s ease-in-out infinite; }
+@keyframes breathe { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+
+main { display: grid; grid-template-columns: 220px 1fr; min-height: calc(100vh - 56px); }
+
+aside {
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 1.5rem 0;
+}
+
+.nav-group-label {
+  font-family: var(--font-mono); font-size: 0.65rem;
+  color: var(--subtle); text-transform: uppercase; letter-spacing: 0.1em;
+  padding: 0 1.25rem; margin: 1.25rem 0 0.35rem;
+}
+
+.nav-btn {
+  display: flex; align-items: center; gap: 0.625rem;
+  width: 100%; padding: 0.5rem 1.25rem;
+  border: none; background: transparent;
+  color: var(--muted); font-family: var(--font-body); font-size: 0.825rem;
+  cursor: pointer; text-align: left; transition: all 0.15s;
+  border-left: 2px solid transparent;
+}
+
+.nav-btn:hover { color: var(--text); background: var(--surface2); }
+.nav-btn.active { color: var(--accent); border-left-color: var(--accent); background: var(--accent-light); font-weight: 500; }
+
+.nav-icon { width: 16px; height: 16px; opacity: 0.6; flex-shrink: 0; }
+.nav-btn.active .nav-icon { opacity: 1; }
+
+.content { padding: 2rem 2.5rem; overflow-y: auto; max-width: 960px; }
+.page { display: none; }
+.page.active { display: block; }
+
+.page-header { margin-bottom: 1.75rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border); }
+.page-title { font-family: var(--font-head); font-size: 1.45rem; font-weight: 700; color: var(--text); letter-spacing: -0.02em; margin-bottom: 0.2rem; }
+.page-sub { font-size: 0.8rem; color: var(--muted); }
+
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.875rem; margin-bottom: 1.75rem; }
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1rem 1.125rem;
+}
+
+.stat-label { font-family: var(--font-mono); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--subtle); margin-bottom: 0.5rem; }
+.stat-value { font-family: var(--font-head); font-size: 1.65rem; font-weight: 700; color: var(--text); letter-spacing: -0.03em; line-height: 1.1; }
+.stat-unit { font-size: 0.7rem; font-family: var(--font-mono); color: var(--subtle); margin-top: 0.25rem; }
+
+.accent-bar { height: 2px; border-radius: 0; margin-bottom: 0.875rem; }
+
+.charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.875rem; margin-bottom: 0.875rem; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1.25rem 1.375rem;
+}
+
+.card-title {
+  font-size: 0.775rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.07em; color: var(--muted);
+  margin-bottom: 1rem;
+}
+
+.bar-row { display: flex; align-items: center; gap: 0.625rem; margin-bottom: 0.5rem; }
+.bar-label { font-size: 0.72rem; color: var(--muted); width: 80px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar-track { flex: 1; height: 6px; background: var(--surface2); border-radius: 0; }
+.bar-fill { height: 100%; transition: width 0.9s cubic-bezier(0.4,0,0.2,1); }
+.bar-val { font-family: var(--font-mono); font-size: 0.68rem; color: var(--subtle); width: 60px; text-align: right; }
+
+.section-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.section-title { font-family: var(--font-head); font-size: 1rem; font-weight: 700; margin-bottom: 0.3rem; }
+.section-desc { font-size: 0.78rem; color: var(--muted); line-height: 1.65; margin-bottom: 1.25rem; }
+.section-desc strong { color: var(--text); font-weight: 600; }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 0.375rem;
+  padding: 0.5rem 1.125rem;
+  border-radius: 4px; border: 1px solid transparent;
+  font-family: var(--font-body); font-size: 0.8rem; font-weight: 500;
+  cursor: pointer; transition: all 0.15s; letter-spacing: 0.01em;
+}
+
+.btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn-primary:hover { background: #152E4A; }
+.btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.btn-secondary { background: var(--surface); color: var(--text); border-color: var(--border-strong); }
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+.metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.875rem; margin-top: 1.25rem; }
+.metric-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 5px; padding: 1rem 1.125rem; }
+.metric-name { font-family: var(--font-mono); font-size: 0.62rem; color: var(--subtle); text-transform: uppercase; letter-spacing: 0.09em; margin-bottom: 0.625rem; }
+.metric-row { display: flex; justify-content: space-between; align-items: center; padding: 0.2rem 0; }
+.metric-key { font-size: 0.75rem; color: var(--muted); }
+.metric-val { font-family: var(--font-mono); font-size: 0.8rem; font-weight: 500; color: var(--accent); }
+
+.log-box {
+  background: #F9F8F6;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  font-family: var(--font-mono); font-size: 0.72rem;
+  color: var(--muted); max-height: 130px; overflow-y: auto; margin-top: 0.875rem;
+}
+.log-line { line-height: 1.9; }
+.log-ts { color: var(--subtle); margin-right: 0.5rem; }
+.log-ok { color: var(--accent2); }
+.log-err { color: var(--danger); }
+
+.predict-layout { display: grid; grid-template-columns: 1fr 340px; gap: 1rem; align-items: start; }
+
+.form-card { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 1.375rem; }
+.form-title { font-size: 0.775rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); margin-bottom: 1.125rem; }
+
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.625rem; margin-bottom: 1.125rem; }
+
+.field { display: flex; flex-direction: column; gap: 0.25rem; }
+.field label { font-size: 0.68rem; font-family: var(--font-mono); color: var(--subtle); text-transform: uppercase; letter-spacing: 0.07em; }
+
+.field input, .field select {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--text);
+  padding: 0.4rem 0.625rem;
+  font-size: 0.8rem;
+  font-family: var(--font-body);
+  transition: border-color 0.15s;
+  height: 32px;
+}
+.field input:focus, .field select:focus { outline: none; border-color: var(--accent); background: #fff; }
+
+.info-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1.25rem 1.375rem;
+}
+
+.info-title { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--subtle); margin-bottom: 0.875rem; }
+.info-body { font-size: 0.78rem; color: var(--muted); line-height: 1.7; }
+.info-body strong { color: var(--text); font-weight: 500; }
+.info-tip { font-size: 0.72rem; color: var(--accent); margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border); }
+
+.result-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 5px; padding: 1.125rem 1.25rem; margin-top: 0.875rem; display: none; }
+.result-box.visible { display: block; animation: appear 0.25s ease; }
+@keyframes appear { from{opacity:0;transform:translateY(4px);} to{opacity:1;transform:translateY(0);} }
+
+.result-badge { display: inline-block; font-family: var(--font-mono); font-size: 0.7rem; font-weight: 500; padding: 0.2rem 0.6rem; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.75rem; }
+.badge-success { background: var(--accent2-light); color: var(--accent2); }
+.badge-warn { background: var(--warn-light); color: var(--warn); }
+.badge-danger { background: var(--danger-light); color: var(--danger); }
+
+.result-value { font-family: var(--font-head); font-size: 1.6rem; font-weight: 700; margin-bottom: 0.75rem; letter-spacing: -0.02em; }
+.result-value.good { color: var(--accent2); }
+.result-value.warn { color: var(--warn); }
+.result-value.bad  { color: var(--danger); }
+
+.prob-row { margin: 0.35rem 0; }
+.prob-label-row { display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--muted); margin-bottom: 0.15rem; font-family: var(--font-mono); }
+.prob-track { height: 4px; background: var(--border); border-radius: 0; }
+.prob-fill { height: 100%; background: var(--accent); transition: width 0.8s; }
+
+.divider { height: 1px; background: var(--border); margin: 1.5rem 0; }
+
+.spinner { display: inline-block; width: 12px; height: 12px; border: 1.5px solid rgba(255,255,255,0.35); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; }
+@keyframes spin { to{transform:rotate(360deg);} }
+
+@media (max-width: 900px) {
+  .stats-grid { grid-template-columns: repeat(2,1fr); }
+  .charts-row { grid-template-columns: 1fr; }
+  .predict-layout { grid-template-columns: 1fr; }
+  .metrics-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 680px) {
+  main { grid-template-columns: 1fr; }
+  aside { border-right: none; border-bottom: 1px solid var(--border); padding: 0.5rem 0; }
+  .content { padding: 1.25rem; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<header>
+  <div class="logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="1" y="9" width="3" height="6" rx="0.5" fill="white" opacity="0.6"/>
+        <rect x="6" y="6" width="3" height="9" rx="0.5" fill="white" opacity="0.8"/>
+        <rect x="11" y="2" width="3" height="13" rx="0.5" fill="white"/>
+      </svg>
+    </div>
+    VentesML
+  </div>
+  <div class="status-indicator">
+    <div class="status-dot" id="statusDot"></div>
+    <span id="statusText">Vérification de la connexion…</span>
+  </div>
+</header>
+
+<main>
+<aside>
+  <div class="nav-group-label">Analyse</div>
+  <button class="nav-btn active" onclick="showPage('dashboard', this)">
+    <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+    Vue d'ensemble
+  </button>
+  <button class="nav-btn" onclick="showPage('train', this)">
+    <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
+    Entraînement
+  </button>
+
+  <div class="nav-group-label">Prédictions</div>
+  <button class="nav-btn" onclick="showPage('predict-status', this)">
+    <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12l4-4 3 3 5-7"/></svg>
+    Statut de vente
+  </button>
+  <button class="nav-btn" onclick="showPage('predict-amount', this)">
+    <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v12M5 4.5h4.5a1.5 1.5 0 010 3H6a1.5 1.5 0 000 3H11"/></svg>
+    Montant TTC
+  </button>
+  <button class="nav-btn" onclick="showPage('predict-return', this)">
+    <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5H5.5a3.5 3.5 0 000 7H12M12 5l-2.5-2.5M12 5l-2.5 2.5"/></svg>
+    Risque de retour
+  </button>
+</aside>
+
+<div class="content">
+
+  <!-- DASHBOARD -->
+  <div id="page-dashboard" class="page active">
+    <div class="page-header">
+      <div class="page-title">Vue d'ensemble</div>
+      <div class="page-sub">Données en temps réel · <span id="dataSource">—</span></div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div style="height:2px;background:var(--accent);margin-bottom:0.875rem;"></div>
+        <div class="stat-label">Total ventes</div>
+        <div class="stat-value" id="st-total">—</div>
+        <div class="stat-unit">transactions</div>
+      </div>
+      <div class="stat-card">
+        <div style="height:2px;background:var(--accent2);margin-bottom:0.875rem;"></div>
+        <div class="stat-label">Chiffre d'affaires</div>
+        <div class="stat-value" id="st-ca">—</div>
+        <div class="stat-unit">MAD TTC</div>
+      </div>
+      <div class="stat-card">
+        <div style="height:2px;background:var(--warn);margin-bottom:0.875rem;"></div>
+        <div class="stat-label">Taux de complétion</div>
+        <div class="stat-value" id="st-taux">—</div>
+        <div class="stat-unit">ventes complétées</div>
+      </div>
+      <div class="stat-card">
+        <div style="height:2px;background:var(--danger);margin-bottom:0.875rem;"></div>
+        <div class="stat-label">Retours</div>
+        <div class="stat-value" id="st-retours">—</div>
+        <div class="stat-unit">demandes traitées</div>
+      </div>
+    </div>
+
+    <div class="charts-row">
+      <div class="card">
+        <div class="card-title">CA par canal</div>
+        <div id="chart-canal"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Répartition des statuts</div>
+        <div id="chart-statut"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Top 5 produits — chiffre d'affaires</div>
+      <div id="chart-produits"></div>
+    </div>
+  </div>
+
+  <!-- TRAIN -->
+  <div id="page-train" class="page">
+    <div class="page-header">
+      <div class="page-title">Entraînement des modèles</div>
+      <div class="page-sub">Trois modèles entraînés sur les données Cassandra</div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-title">Modèles disponibles</div>
+      <div class="section-desc">
+        <strong>1. Statut de vente</strong> — Gradient Boosting · Classification ternaire : complétée, annulée, en attente<br>
+        <strong>2. Montant TTC</strong> — Random Forest Regressor · Estimation du chiffre d'affaires d'une transaction<br>
+        <strong>3. Risque de retour</strong> — Random Forest Classifier · Probabilité qu'un article soit retourné
+      </div>
+      <button class="btn btn-primary" id="trainBtn" onclick="trainModels()">
+        Lancer l'entraînement
+      </button>
+      <div class="log-box" id="trainLog"></div>
+      <div class="metrics-grid" id="metricsGrid"></div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-title">État des modèles</div>
+      <div class="metrics-grid" id="modelsInfo"></div>
+      <button class="btn btn-secondary" style="margin-top:1rem" onclick="loadModelsInfo()">Actualiser</button>
+    </div>
+  </div>
+
+  <!-- PREDICT STATUS -->
+  <div id="page-predict-status" class="page">
+    <div class="page-header">
+      <div class="page-title">Prédiction de statut</div>
+      <div class="page-sub">Prédit si une vente sera complétée, annulée ou en attente</div>
+    </div>
+    <div class="predict-layout">
+      <div class="form-card">
+        <div class="form-title">Paramètres de la transaction</div>
+        <div class="form-grid">
+          <div class="field"><label>Canal</label>
+            <select id="s-canal"><option value="web">Web</option><option value="mobile">Mobile</option><option value="magasin">Magasin</option><option value="marketplace">Marketplace</option></select>
+          </div>
+          <div class="field"><label>Région</label>
+            <select id="s-region">
+              <option value="Casablanca-Settat">Casablanca-Settat</option>
+              <option value="Rabat-Sale-Kenitra">Rabat-Salé-Kénitra</option>
+              <option value="Fes-Meknes">Fès-Meknès</option>
+              <option value="Marrakech-Safi">Marrakech-Safi</option>
+              <option value="Tanger-Tetouan">Tanger-Tétouan</option>
+              <option value="Souss-Massa">Souss-Massa</option>
+            </select>
+          </div>
+          <div class="field"><label>Segment client</label>
+            <select id="s-segment"><option value="Premium">Premium</option><option value="Professionnel">Professionnel</option><option value="Fidèle">Fidèle</option><option value="Standard">Standard</option><option value="Occasionnel">Occasionnel</option></select>
+          </div>
+          <div class="field"><label>Référence produit</label><input type="number" id="s-produit" value="1" min="1" max="30"></div>
+          <div class="field"><label>Prix unitaire (MAD)</label><input type="number" id="s-prix" value="500" step="0.01"></div>
+          <div class="field"><label>Quantité</label><input type="number" id="s-qte" value="2" min="1"></div>
+          <div class="field"><label>Remise (0 – 1)</label><input type="number" id="s-remise" value="0.10" step="0.01" min="0" max="1"></div>
+          <div class="field"><label>Montant HT (MAD)</label><input type="number" id="s-ht" value="900" step="0.01"></div>
+        </div>
+        <button class="btn btn-primary" onclick="predictStatus()">Lancer la prédiction</button>
+        <div class="result-box" id="result-status"></div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-title">Fonctionnement</div>
+        <div class="info-body">
+          Le modèle <strong>Gradient Boosting</strong> analyse le canal, la région, le segment client, le prix, la quantité et la remise afin de prédire l'issue probable de la transaction.<br><br>
+          Il intègre le <strong>taux de retour historique</strong> du produit et la <strong>saisonnalité</strong> comme variables supplémentaires.
+          <div class="info-tip">Une remise supérieure à 20 % est corrélée à un risque d'annulation plus élevé.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PREDICT AMOUNT -->
+  <div id="page-predict-amount" class="page">
+    <div class="page-header">
+      <div class="page-title">Estimation du montant TTC</div>
+      <div class="page-sub">Estime le chiffre d'affaires TTC d'une transaction</div>
+    </div>
+    <div class="predict-layout">
+      <div class="form-card">
+        <div class="form-title">Paramètres de la transaction</div>
+        <div class="form-grid">
+          <div class="field"><label>Canal</label>
+            <select id="a-canal"><option value="web">Web</option><option value="mobile">Mobile</option><option value="magasin">Magasin</option><option value="marketplace">Marketplace</option></select>
+          </div>
+          <div class="field"><label>Région</label>
+            <select id="a-region">
+              <option value="Casablanca-Settat">Casablanca-Settat</option>
+              <option value="Rabat-Sale-Kenitra">Rabat-Salé-Kénitra</option>
+              <option value="Fes-Meknes">Fès-Meknès</option>
+              <option value="Marrakech-Safi">Marrakech-Safi</option>
+              <option value="Tanger-Tetouan">Tanger-Tétouan</option>
+              <option value="Souss-Massa">Souss-Massa</option>
+            </select>
+          </div>
+          <div class="field"><label>Segment client</label>
+            <select id="a-segment"><option value="Premium">Premium</option><option value="Professionnel">Professionnel</option><option value="Fidèle">Fidèle</option><option value="Standard">Standard</option><option value="Occasionnel">Occasionnel</option></select>
+          </div>
+          <div class="field"><label>Référence produit</label><input type="number" id="a-produit" value="1" min="1" max="30"></div>
+          <div class="field"><label>Prix unitaire (MAD)</label><input type="number" id="a-prix" value="500" step="0.01"></div>
+          <div class="field"><label>Quantité</label><input type="number" id="a-qte" value="2" min="1"></div>
+          <div class="field"><label>Remise (0 – 1)</label><input type="number" id="a-remise" value="0.10" step="0.01" min="0" max="1"></div>
+          <div class="field"><label>TVA (MAD)</label><input type="number" id="a-tva" value="180" step="0.01"></div>
+        </div>
+        <button class="btn btn-primary" onclick="predictAmount()">Estimer le montant</button>
+        <div class="result-box" id="result-amount"></div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-title">Fonctionnement</div>
+        <div class="info-body">
+          Le modèle <strong>Random Forest Regressor</strong> (150 arbres de décision) prédit le montant TTC à partir des caractéristiques de la transaction.<br><br>
+          Cas d'usage : <strong>validation de devis</strong>, détection d'anomalies de prix, anticipation du chiffre d'affaires d'une campagne commerciale.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PREDICT RETURN -->
+  <div id="page-predict-return" class="page">
+    <div class="page-header">
+      <div class="page-title">Évaluation du risque de retour</div>
+      <div class="page-sub">Probabilité qu'un article fasse l'objet d'une demande de retour</div>
+    </div>
+    <div class="predict-layout">
+      <div class="form-card">
+        <div class="form-title">Paramètres de la transaction</div>
+        <div class="form-grid">
+          <div class="field"><label>Canal</label>
+            <select id="r-canal"><option value="web">Web</option><option value="mobile">Mobile</option><option value="magasin">Magasin</option><option value="marketplace">Marketplace</option></select>
+          </div>
+          <div class="field"><label>Région</label>
+            <select id="r-region">
+              <option value="Casablanca-Settat">Casablanca-Settat</option>
+              <option value="Rabat-Sale-Kenitra">Rabat-Salé-Kénitra</option>
+              <option value="Fes-Meknes">Fès-Meknès</option>
+              <option value="Marrakech-Safi">Marrakech-Safi</option>
+              <option value="Tanger-Tetouan">Tanger-Tétouan</option>
+              <option value="Souss-Massa">Souss-Massa</option>
+            </select>
+          </div>
+          <div class="field"><label>Segment client</label>
+            <select id="r-segment"><option value="Premium">Premium</option><option value="Professionnel">Professionnel</option><option value="Fidèle">Fidèle</option><option value="Standard">Standard</option><option value="Occasionnel">Occasionnel</option></select>
+          </div>
+          <div class="field"><label>Référence produit</label><input type="number" id="r-produit" value="1" min="1" max="30"></div>
+          <div class="field"><label>Prix unitaire (MAD)</label><input type="number" id="r-prix" value="500" step="0.01"></div>
+          <div class="field"><label>Quantité</label><input type="number" id="r-qte" value="2" min="1"></div>
+          <div class="field"><label>Remise (0 – 1)</label><input type="number" id="r-remise" value="0.10" step="0.01" min="0" max="1"></div>
+          <div class="field"><label>Montant HT (MAD)</label><input type="number" id="r-ht" value="900" step="0.01"></div>
+        </div>
+        <button class="btn btn-primary" onclick="predictReturn()">Évaluer le risque</button>
+        <div class="result-box" id="result-return"></div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-title">Grille d'interprétation</div>
+        <div class="info-body">
+          Le modèle <strong>Random Forest</strong> avec pondération des classes détecte les transactions à risque élevé de retour.<br><br>
+          <span style="color:var(--danger);font-weight:500">Risque élevé (&gt; 60 %)</span> — action préventive recommandée<br>
+          <span style="color:var(--warn);font-weight:500">Risque moyen (35 – 60 %)</span> — surveillance accrue<br>
+          <span style="color:var(--accent2);font-weight:500">Risque faible (&lt; 35 %)</span> — transaction saine
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</main>
+</div>
+
+<script>
+const API = '';
+
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+
+async function checkHealth() {
+  try {
+    const r = await fetch(API + '/api/health');
+    const d = await r.json();
+    const dot = document.getElementById('statusDot');
+    const txt = document.getElementById('statusText');
+    if (d.cassandra) {
+      dot.className = 'status-dot live';
+      txt.textContent = 'Cassandra · connecté';
+    } else {
+      dot.className = 'status-dot';
+      txt.textContent = 'Mode démo · Cassandra hors ligne';
+    }
+  } catch {}
+}
+
+async function loadStats() {
+  try {
+    const r = await fetch(API + '/api/stats');
+    const d = await r.json();
+    document.getElementById('st-total').textContent = d.total_ventes?.toLocaleString('fr') ?? '—';
+    document.getElementById('st-ca').textContent = d.ca_total ? (d.ca_total/1000).toFixed(0)+'K' : '—';
+    document.getElementById('st-taux').textContent = d.taux_completion ? d.taux_completion+'%' : '—';
+    document.getElementById('st-retours').textContent = d.nb_retours ?? '—';
+    document.getElementById('dataSource').textContent = d.source === 'cassandra' ? 'Cassandra' : 'Données de démonstration';
+
+    renderBars('chart-canal', d.par_canal, ['#1A3A5C','#2D6A4F','#92600A','#8B2020','#4A6FA5']);
+    renderBars('chart-statut', d.par_statut, ['#2D6A4F','#92600A','#8B2020']);
+    renderBars('chart-produits', Object.fromEntries(
+      Object.entries(d.top_produits||{}).map(([k,v])=>['Produit '+k,v])
+    ), ['#1A3A5C','#2D6A4F','#92600A','#8B2020','#4A6FA5']);
+  } catch(e) { console.error(e); }
+}
+
+function renderBars(id, data, colors) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const entries = Object.entries(data);
+  const max = Math.max(...entries.map(([,v])=>v), 1);
+  el.innerHTML = entries.map(([k,v],i) => `
+    <div class="bar-row">
+      <div class="bar-label" title="${k}">${k}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${(v/max*100).toFixed(1)}%;background:${colors[i%colors.length]}"></div></div>
+      <div class="bar-val">${typeof v==='number'?(v>1000?(v/1000).toFixed(1)+'K':typeof v.toFixed==='function'?v.toFixed(1):v):v}</div>
+    </div>`).join('');
+}
+
+async function trainModels() {
+  const btn = document.getElementById('trainBtn');
+  const log = document.getElementById('trainLog');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div>&nbsp;Entraînement en cours…';
+  log.innerHTML = '';
+  addLog(log, 'Connexion à la source de données…');
+  try {
+    addLog(log, 'Chargement des tables Cassandra…');
+    const r = await fetch(API+'/api/train',{method:'POST'});
+    const d = await r.json();
+    if (d.success) {
+      addLog(log, `Source : ${d.source}`, 'ok');
+      addLog(log, `Modèles entraînés : ${d.models_trained.join(', ')}`, 'ok');
+      renderMetrics(d.metrics);
+    } else {
+      addLog(log, 'Erreur : '+d.error, 'err');
+    }
+  } catch(e) {
+    addLog(log, 'Erreur : '+e.message, 'err');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Lancer l\'entraînement';
+  }
+}
+
+function addLog(el, msg, cls='') {
+  const ts = new Date().toLocaleTimeString('fr');
+  el.innerHTML += `<div class="log-line"><span class="log-ts">[${ts}]</span><span class="log-${cls||'plain'}">${msg}</span></div>`;
+  el.scrollTop = el.scrollHeight;
+}
+
+function renderMetrics(m) {
+  document.getElementById('metricsGrid').innerHTML = `
+    <div class="metric-card">
+      <div class="metric-name">Statut de vente</div>
+      <div class="metric-row"><span class="metric-key">Précision globale</span><span class="metric-val">${(m.status?.accuracy*100||0).toFixed(1)}%</span></div>
+      <div class="metric-row"><span class="metric-key">F1 — complétée</span><span class="metric-val">${(m.status?.f1_completee*100||0).toFixed(1)}%</span></div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-name">Montant TTC</div>
+      <div class="metric-row"><span class="metric-key">Erreur absolue moy.</span><span class="metric-val">${m.amount?.mae?.toLocaleString('fr')} MAD</span></div>
+      <div class="metric-row"><span class="metric-key">R²</span><span class="metric-val">${m.amount?.r2}</span></div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-name">Risque de retour</div>
+      <div class="metric-row"><span class="metric-key">Précision globale</span><span class="metric-val">${(m.return?.accuracy*100||0).toFixed(1)}%</span></div>
+      <div class="metric-row"><span class="metric-key">F1 — retour</span><span class="metric-val">${(m.return?.f1_retour*100||0).toFixed(1)}%</span></div>
+    </div>`;
+}
+
+async function loadModelsInfo() {
+  try {
+    const r = await fetch(API+'/api/models/info');
+    const d = await r.json();
+    document.getElementById('modelsInfo').innerHTML = Object.entries(d.models).map(([name,info]) => `
+      <div class="metric-card">
+        <div class="metric-name">${name}</div>
+        ${info.disponible
+          ? `<div class="metric-row"><span class="metric-key">Disponible</span><span class="metric-val" style="color:var(--accent2)">Oui</span></div>
+             <div class="metric-row"><span class="metric-key">Mis à jour</span><span class="metric-val" style="font-size:0.7rem">${info.derniere_maj?.split('T')[0]}</span></div>
+             <div class="metric-row"><span class="metric-key">Taille</span><span class="metric-val">${info.taille_kb} Ko</span></div>`
+          : `<div class="metric-row"><span class="metric-key">Disponible</span><span class="metric-val" style="color:var(--danger)">Non entraîné</span></div>`
+        }
+      </div>`).join('');
+  } catch {}
+}
+
+async function predictStatus() {
+  const p = {
+    canal: document.getElementById('s-canal').value,
+    region: document.getElementById('s-region').value,
+    segment: document.getElementById('s-segment').value,
+    produit_id: +document.getElementById('s-produit').value,
+    prix_unitaire: +document.getElementById('s-prix').value,
+    quantite: +document.getElementById('s-qte').value,
+    remise: +document.getElementById('s-remise').value,
+    montant_ht: +document.getElementById('s-ht').value,
+  };
+  const r = await fetch(API+'/api/predict/status',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});
+  const d = await r.json();
+  const box = document.getElementById('result-status');
+  if (!d.success) { box.className='result-box visible'; box.innerHTML=`<span style="color:var(--danger);font-size:0.8rem">${d.error}</span>`; return; }
+
+  const cls = d.statut_predit==='completee'?'good':d.statut_predit==='en_attente'?'warn':'bad';
+  const badge = d.statut_predit==='completee'?'badge-success':d.statut_predit==='en_attente'?'badge-warn':'badge-danger';
+  const label = d.statut_predit==='completee'?'Complétée':d.statut_predit==='en_attente'?'En attente':'Annulée';
+  const probs = d.probabilites||{};
+
+  box.className='result-box visible';
+  box.innerHTML=`
+    <div class="result-badge ${badge}">${label}</div>
+    ${Object.entries(probs).map(([k,v])=>`
+      <div class="prob-row">
+        <div class="prob-label-row"><span>${k}</span><span>${(v*100).toFixed(1)}%</span></div>
+        <div class="prob-track"><div class="prob-fill" style="width:${v*100}%"></div></div>
+      </div>`).join('')}`;
+}
+
+async function predictAmount() {
+  const p = {
+    canal: document.getElementById('a-canal').value,
+    region: document.getElementById('a-region').value,
+    segment: document.getElementById('a-segment').value,
+    produit_id: +document.getElementById('a-produit').value,
+    prix_unitaire: +document.getElementById('a-prix').value,
+    quantite: +document.getElementById('a-qte').value,
+    remise: +document.getElementById('a-remise').value,
+    tva: +document.getElementById('a-tva').value,
+  };
+  const r = await fetch(API+'/api/predict/amount',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});
+  const d = await r.json();
+  const box = document.getElementById('result-amount');
+  if (!d.success) { box.className='result-box visible'; box.innerHTML=`<span style="color:var(--danger);font-size:0.8rem">${d.error}</span>`; return; }
+  box.className='result-box visible';
+  box.innerHTML=`
+    <div class="result-badge badge-success">Estimation</div>
+    <div class="result-value good">${d.montant_ttc_predit?.toLocaleString('fr')} MAD</div>
+    <div style="font-size:0.72rem;color:var(--subtle);font-family:var(--font-mono)">Montant TTC prédit par le modèle</div>`;
+}
+
+async function predictReturn() {
+  const p = {
+    canal: document.getElementById('r-canal').value,
+    region: document.getElementById('r-region').value,
+    segment: document.getElementById('r-segment').value,
+    produit_id: +document.getElementById('r-produit').value,
+    prix_unitaire: +document.getElementById('r-prix').value,
+    quantite: +document.getElementById('r-qte').value,
+    remise: +document.getElementById('r-remise').value,
+    montant_ht: +document.getElementById('r-ht').value,
+  };
+  const r = await fetch(API+'/api/predict/return',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});
+  const d = await r.json();
+  const box = document.getElementById('result-return');
+  if (!d.success) { box.className='result-box visible'; box.innerHTML=`<span style="color:var(--danger);font-size:0.8rem">${d.error}</span>`; return; }
+
+  const cls = d.niveau==='Élevé'?'bad':d.niveau==='Moyen'?'warn':'good';
+  const badge = d.niveau==='Élevé'?'badge-danger':d.niveau==='Moyen'?'badge-warn':'badge-success';
+  const fillColor = d.niveau==='Élevé'?'var(--danger)':d.niveau==='Moyen'?'var(--warn)':'var(--accent2)';
+
+  box.className='result-box visible';
+  box.innerHTML=`
+    <div class="result-badge ${badge}">Risque ${d.niveau}</div>
+    <div class="prob-row" style="margin-top:0.5rem">
+      <div class="prob-label-row"><span>Probabilité de retour</span><span>${(d.probabilite_retour*100).toFixed(1)}%</span></div>
+      <div class="prob-track"><div class="prob-fill" style="width:${d.probabilite_retour*100}%;background:${fillColor}"></div></div>
+    </div>`;
+}
+
+checkHealth();
+loadStats();
+loadModelsInfo();
+setInterval(checkHealth, 30000);
+</script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "name": "postgres-source-produits",
+  "config": {
+    "connector.class": "io.confluent.connect.jdbc.JdbcSourceConnector",
+    "connection.url": "jdbc:postgresql://postgres_source:5432/salesdbsource",
+    "connection.user": "admin",
+    "connection.password": "admin",
+    "mode": "incrementing",
+    "incrementing.column.name": "produit_id",
+    "table.whitelist": "produits",
+    "topic.prefix": "pg_",
+    "poll.interval.ms": "5000"
+  }
+}

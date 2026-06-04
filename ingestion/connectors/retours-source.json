@@ -1,0 +1,15 @@
+{
+  "name": "csv-retours",
+  "config": {
+    "connector.class": "com.github.jcustenborder.kafka.connect.spooldir.SpoolDirCsvSourceConnector",
+    "input.path": "/data/data_generator",
+    "finished.path": "/data/data_generator/finished",
+    "error.path": "/data/data_generator/error",
+    "input.file.pattern": "retours\\.csv",
+    "topic": "retours",
+    "csv.first.row.as.header": "true",
+    "schema.generation.enabled": "true",
+    "halt.on.error": "false",
+    "timestamp.mode": "PROCESS_TIME"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "postgres-source-clients",
+  "config": {
+    "connector.class": "io.confluent.connect.jdbc.JdbcSourceConnector",
+    "connection.url": "jdbc:postgresql://postgres_source:5432/salesdbsource",
+    "connection.user": "admin",
+    "connection.password": "admin",
+    "mode": "incrementing",
+    "incrementing.column.name": "client_id",
+    "table.whitelist": "clients",
+    "topic.prefix": "pg_",
+    "poll.interval.ms": "5000"
+  }
+}

@@ -1,0 +1,7 @@
+canal_id,code_canal,libelle,type,commission_pct,actif,date_creation,description
+1,MAGASIN,Magasin physique,offline,0.0,true,2018-01-01,Ventes en points de vente physiques
+2,WEB,Site e-commerce,online,2.5,true,2019-03-15,Boutique en ligne principale
+3,MOBILE,Application mobile,online,3.0,true,2020-06-01,Application iOS et Android
+4,MARKETPLACE,Marketplace partenaire,online,8.0,true,2021-01-10,Ventes via plateformes tierces
+5,B2B,Ventes B2B,offline,0.0,true,2019-09-01,Contrats entreprises et grossistes
+6,CATALOGUE,Vente par catalogue,offline,1.0,false,2018-01-01,Canal historique desactive en 2023
